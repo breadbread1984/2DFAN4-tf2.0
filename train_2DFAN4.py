@@ -20,17 +20,17 @@ def main():
         images, labels = data.getBatch(batch_size);
         with tf.GradientTape() as tape:
             heatmaps = model(images);
-            loss = tf.math.squared_difference(heatmaps,labels);
-            loss = tf.math.reduce_sum(loss, axis = (1,2,3));
-            loss = tf.math.reduce_mean(loss, axis = (0));
+            dists = tf.math.squared_difference(heatmaps,labels);
+            total_dists = tf.math.reduce_sum(dists, axis = (1,2,3));
+            loss = tf.math.reduce_mean(total_dists, axis = (0));
             avg_loss.update_state(loss);
         if avg_loss.result() < 0.01: break;
         if tf.equal(optimizer.iterations % 100, 0):
             with log.as_default():
                 tf.summary.scalar('loss', avg_loss.result(), step = optimizer.iterations);
             avg_loss.reset_states();
-        grads = tape.gradient(loss, model.variables);
-        optimizer.apply_gradients(zip(grads, model.variables));
+        grads = tape.gradient(loss, model.trainable_variables);
+        optimizer.apply_gradients(zip(grads, model.trainable_variables));
         checkpoint.save(os.path.join('checkpoints_2DFAN4','ckpt'));
     # save final model
     if False == os.path.exists('model'): os.mkdir('model');
