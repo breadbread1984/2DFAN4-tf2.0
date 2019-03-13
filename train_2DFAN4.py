@@ -32,7 +32,8 @@ def main():
             avg_loss.reset_states();
         grads = tape.gradient(loss, model.trainable_variables);
         optimizer.apply_gradients(zip(grads, model.trainable_variables));
-        checkpoint.save(os.path.join('checkpoints_2DFAN4','ckpt'));
+        if tf.equal(optimizer.iterations % 100, 0):
+            checkpoint.save(os.path.join('checkpoints_2DFAN4','ckpt'));
     # save final model
     if False == os.path.exists('model'): os.mkdir('model');
     model.save_weights('./model/2dfan4');
