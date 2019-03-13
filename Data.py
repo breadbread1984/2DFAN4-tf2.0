@@ -207,6 +207,6 @@ class Data(object):
 if __name__ == "__main__":
     
     data = Data('300W-LP');
-    for i in range(10):
-        images, labels = data.getBatch();
+    #for i in range(10):
+    #    images, labels = data.getBatch();
     data.generateTFRecord();
