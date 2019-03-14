@@ -10,4 +10,11 @@ download 300W-LP and place its directory under the root directory of this projec
 python3 train_2DFAN4.py
 ```
 
+### how to test
+
+test the model with class Landmarker.py. you can test the model on a given image by running the following command.
+
+```Bash
+python3 Landmarker.py
+```
 
