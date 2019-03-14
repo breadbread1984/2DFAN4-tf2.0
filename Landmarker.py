@@ -107,9 +107,9 @@ class Landmarker(object):
 
 if __name__ == "__main__":
     
-    landmark = Landmark();
+    landmarker = Landmarker();
     img = cv2.imread('test/christmas.jpg');
-    show = landmark.visualize(img,landmark.landmark(img));
+    show = landmarker.visualize(img,landmarker.landmark(img));
     cv2.imshow('show',show);
     cv2.waitKey();
 
