@@ -2,6 +2,7 @@
 
 from copy import deepcopy;
 from os.path import exists;
+import numpy as np;
 import tensorflow as tf;
 import cv2;
 import dlib;
@@ -44,14 +45,14 @@ class Landmarker(object):
         affine = np.dot(AAt_inv,ABt).transpose();
         affine = affine[:2,:];
         patch = cv2.warpAffine(img, affine, size);
-        return path;
+        return patch;
     
     def postprocess(self, heatmaps):
         
         pts = list();
         for heatmap in np.transpose(heatmaps,(2,0,1)):
             # argmax of heatmap
-            pt = (np.unravel_index(heatmap.argmax(),heatmap.shape)).astype('float32');
+            pt = np.array(np.unravel_index(heatmap.argmax(),heatmap.shape)).astype('float32');
             # refine position
             if 0 < pt[0] and pt[0] < 63 and 0 < pt[1] and pt[1] < 63:
                 if heatmap[pt[0] + 1, pt[1]] > heatmap[pt[0] - 1, pt[1]]:
@@ -71,7 +72,7 @@ class Landmarker(object):
     def project(self, landmarks, size):
         
         assert type(size) is tuple;
-        center = np.array(size / 2, dtype = np.float32);
+        center = np.array(size // 2, dtype = np.float32);
         scale = np.array(size, dtype = np.float32);
         return (landmarks - center) / scale;
     
@@ -83,14 +84,17 @@ class Landmarker(object):
     
     def landmark(self, rgb):
 
-        faces = self.detector(rgb,0);
+        gray = cv2.cvtColor(rgb,cv2.COLOR_BGR2GRAY);
+        faces = self.detector(gray,0);
         retval = list();
         for face in faces:
             # crop a square area centered at face
-            length = 1.2 * max(face.right() - face.left(),face.bottom() - face.top());
+            length = int(1.2 * max(face.right() - face.left(),face.bottom() - face.top()));
             faceimg = self.crop(rgb,face,(length, length));
             faceimg_rz = cv2.resize(faceimg,(256,256));
-            heatmaps = self.model.predict(faceimg_rz,batch_size = 1).numpy();
+            faceimg_rz = faceimg_rz[np.newaxis,...].astype(np.float32);
+            heatmaps = self.model.predict(faceimg_rz,batch_size = 1);
+            heatmaps = heatmaps[0,...];
             landmarks = self.postprocess(heatmaps);
             landmarks_proj = self.project(landmarks, (256,256));
             landmarks_reproj = self.reproject(landmarks_proj, face);
@@ -109,6 +113,7 @@ if __name__ == "__main__":
     
     landmarker = Landmarker();
     img = cv2.imread('test/christmas.jpg');
+    assert img is not None;
     show = landmarker.visualize(img,landmarker.landmark(img));
     cv2.imshow('show',show);
     cv2.waitKey();
