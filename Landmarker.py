@@ -55,13 +55,13 @@ class Landmarker(object):
             pt = np.array(np.unravel_index(heatmap.argmax(),heatmap.shape)).astype('float32');
             # refine position
             if 0 < pt[0] and pt[0] < 63 and 0 < pt[1] and pt[1] < 63:
-                if heatmap[pt[0] + 1, pt[1]] > heatmap[pt[0] - 1, pt[1]]:
+                if heatmap[int(pt[0]) + 1, int(pt[1])] > heatmap[int(pt[0]) - 1, int(pt[1])]:
                     pt[0] = pt[0] + 0.25;
-                elif heatmap[pt[0] + 1, pt[1]] < heatmap[pt[0] - 1, pt[1]]:
+                elif heatmap[int(pt[0]) + 1, int(pt[1])] < heatmap[int(pt[0]) - 1, int(pt[1])]:
                     pt[0] = pt[0] - 0.25;
-                if heatmap[pt[0], pt[1] + 1] > heatmap[pt[0], pt[1] - 1]:
+                if heatmap[int(pt[0]), int(pt[1]) + 1] > heatmap[int(pt[0]), int(pt[1]) - 1]:
                     pt[1] = pt[1] + 0.25;
-                elif heatmap[pt[0], pt[1] + 1] < heatmap[pt[0], pt[1] - 1]:
+                elif heatmap[int(pt[0]), int(pt[1]) + 1] < heatmap[int(pt[0]), int(pt[1]) - 1]:
                     pt[1] = pt[1] - 0.25;
             # image coordinate is the reversed coordinate of matrix
             pt = tuple(reversed(pt * 4));
@@ -72,14 +72,22 @@ class Landmarker(object):
     def project(self, landmarks, size):
         
         assert type(size) is tuple;
-        center = np.array(size // 2, dtype = np.float32);
-        scale = np.array(size, dtype = np.float32);
+        center = np.reshape(np.array(size, dtype = np.float32) / 2,(2,1));
+        scale = np.reshape(np.array(size, dtype = np.float32),(2,1));
         return (landmarks - center) / scale;
     
     def reproject(self, landmarks_proj, bounding):
         
-        center = ((bounding.left() + bounding.right()) // 2, (bounding.top() + bounding.bottom()) // 2);
-        scale = np.array([bounding.right() - bounding.left(), bounding.bottom() - bounding.top()], dtype = np.float32);
+        center = np.reshape(
+            np.array(
+                [(bounding.left() + bounding.right()) / 2, (bounding.top() + bounding.bottom()) / 2],
+                dtype = np.float32
+            ), (2,1));
+        scale = np.reshape(
+            np.array(
+                [bounding.right() - bounding.left(), bounding.bottom() - bounding.top()],
+                dtype = np.float32
+            ), (2,1));
         return landmarks_proj * scale + center;
     
     def landmark(self, rgb):
@@ -106,6 +114,7 @@ class Landmarker(object):
         img = deepcopy(rgb);
         for landmark in landmarks:
             for pt in landmark.transpose():
+                pt = tuple(pt.astype('int32'));
                 cv2.circle(img, pt, 2, (0,255,0), -1);
         return img;
 
