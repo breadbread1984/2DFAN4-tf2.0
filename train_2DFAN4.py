@@ -2,8 +2,10 @@
 
 import os.path;
 import tensorflow as tf;
+import cv2;
 from Model import Landmark_2DFAN4;
 from Data import Data;
+from Landmarker import Landmarker;
 
 batch_size = 10;
 
@@ -39,6 +41,7 @@ def main():
             if img is not None:
                 show = landmarker.visualize(img,landmarker.landmark(img));
                 with log.as_default():
+                    show = np.expand_dims(show, axis = 0);
                     tf.summary.image('landmark', show, step = optimizer.iterations);
     # save final model
     if False == os.path.exists('model'): os.mkdir('model');
