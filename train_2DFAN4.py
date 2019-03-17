@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import os.path;
-import tensorflow as tf;
+import numpy as np;
 import cv2;
+import tensorflow as tf;
 from Model import Landmark_2DFAN4;
 from Data import Data;
 from Landmarker import Landmarker;
