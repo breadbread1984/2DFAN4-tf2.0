@@ -34,6 +34,12 @@ def main():
         optimizer.apply_gradients(zip(grads, model.trainable_variables));
         if tf.equal(optimizer.iterations % 100, 0):
             checkpoint.save(os.path.join('checkpoints_2DFAN4','ckpt'));
+            landmarker = Landmarker();
+            img = cv2.imread('test/christmas.jpg');
+            if img is not None:
+                show = landmarker.visualize(img,landmarker.landmark(img));
+                with log.as_default():
+                    tf.summary.image('landmark', show, step = optimizer.iterations);
     # save final model
     if False == os.path.exists('model'): os.mkdir('model');
     model.save_weights('./model/2dfan4');
