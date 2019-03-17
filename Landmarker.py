@@ -24,7 +24,18 @@ class Landmarker(object):
             raise 'no way to load model!';
         # face detector
         self.detector = dlib.get_frontal_face_detector();
-    
+   
+    def expandBounding(self, bounding, size):
+
+        center = ((bounding.left() + bounding.right()) / 2, (bounding.top() + bounding.bottom()) / 2);
+        expanded = dlib.rectangle(
+            center[0] - size[0] / 2,
+            center[1] - size[1] / 2,
+            center[0] + size[0] / 2,
+            center[1] + size[1] / 2
+        );
+        return expanded;
+
     def crop(self, img, bounding, size):
         
         assert type(size) is tuple;
@@ -98,6 +109,7 @@ class Landmarker(object):
         for face in faces:
             # crop a square area centered at face
             length = int(1.2 * max(face.right() - face.left(),face.bottom() - face.top()));
+            face = self.expandBounding(face,(length,length));
             faceimg = self.crop(rgb,face,(length, length));
             faceimg_rz = cv2.resize(faceimg,(256,256));
             faceimg_rz = faceimg_rz[np.newaxis,...].astype(np.float32);
