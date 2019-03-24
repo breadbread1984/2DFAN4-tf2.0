@@ -20,6 +20,8 @@ class Landmarker(object):
             checkpoint.restore(tf.train.latest_checkpoint('checkpoints_2DFAN4'));
         elif exists('model'):
             self.model.load_weights('model/2dfan4');
+        elif exists('2DFAN4.h5');
+            self.model.load_weights('2DFAN4.h5');
         else:
             raise 'no way to load model!';
         # face detector
@@ -27,12 +29,15 @@ class Landmarker(object):
    
     def expandBounding(self, bounding, size):
 
-        center = ((bounding.left() + bounding.right()) / 2, (bounding.top() + bounding.bottom()) / 2);
+        center = (
+            (bounding.left() + bounding.right()) / 2,
+            (bounding.top() + bounding.bottom()) / 2 + (bounding.bottom() - bounding.top()) / 9
+        );
         expanded = dlib.rectangle(
-            center[0] - size[0] / 2,
-            center[1] - size[1] / 2,
-            center[0] + size[0] / 2,
-            center[1] + size[1] / 2
+            int(center[0] - size[0] / 2),
+            int(center[1] - size[1] / 2),
+            int(center[0] + size[0] / 2),
+            int(center[1] + size[1] / 2)
         );
         return expanded;
 
@@ -108,7 +113,7 @@ class Landmarker(object):
         retval = list();
         for face in faces:
             # crop a square area centered at face
-            length = int(1.2 * max(face.right() - face.left(),face.bottom() - face.top()));
+            length = int(1.5 * max(face.right() - face.left(),face.bottom() - face.top()));
             face = self.expandBounding(face,(length,length));
             faceimg = self.crop(rgb,face,(length, length));
             faceimg_rz = cv2.resize(faceimg,(256,256));

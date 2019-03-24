@@ -18,3 +18,11 @@ test the model with class Landmarker.py. you can test the model on a given image
 python3 Landmarker.py
 ```
 
+### how to save weights in a single file
+
+run script
+
+```Bash
+python3 save_model.py
+```
+
