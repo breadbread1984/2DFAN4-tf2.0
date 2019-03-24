@@ -10,6 +10,12 @@ download 300W-LP and place its directory under the root directory of this projec
 python3 train_2DFAN4.py
 ```
 
+a trained model is available [here](https://pan.baidu.com/s/1iC2ffHHrd0inIb5kfhVN7A). the download password is
+
+```
+79sp
+```
+
 ### how to test
 
 test the model with class Landmarker.py. you can test the model on a given image by running the following command.
