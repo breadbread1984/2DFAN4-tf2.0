@@ -10,4 +10,5 @@ if __name__ == "__main__":
     optimizer = tf.keras.optimizers.Adam(1e-4);
     checkpoint = tf.train.Checkpoint(model = model, optimizer = optimizer, optimizer_step = optimizer.iterations);
     checkpoint.restore(tf.train.latest_checkpoint('checkpoints_2DFAN4'));
+    model.save_weights('./model/2dfan4');
     model.save_weights('2DFAN4.h5', save_format = 'h5');
