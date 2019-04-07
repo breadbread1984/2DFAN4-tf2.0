@@ -10,12 +10,7 @@ download 300W-LP and place its directory under the root directory of this projec
 python3 train_2DFAN4.py
 ```
 
-a trained model is available [here](https://pan.baidu.com/s/1sTSmeBffUMfqPx3QbhHQdg). the download password is
-
-```
-8bzy
-```
-the baidu cloud file sharing is invalidated from time to time. so if you find the link is disabled, please don't hesitate to ask me to update the link in the issue.
+a trained model is available [here](https://mega.nz/#!HQZRWY4L!TM_3K3MdO0UBSB3e6QWLhhDyxIhzGzM4MjSBgusyyoc). 
 
 ### how to test
 
