@@ -4,7 +4,7 @@ import os.path;
 import numpy as np;
 import cv2;
 import tensorflow as tf;
-from Model import Landmark_2DFAN4;
+from Model import 2DFAN4;
 from Data import Data;
 from Landmarker import Landmarker;
 
@@ -12,7 +12,7 @@ batch_size = 10;
 
 def main():
     
-    model = Landmark_2DFAN4();
+    model = 2DFAN4([256,256]);
     data = Data('300W-LP');
     optimizer = tf.keras.optimizers.Adam(1e-4);
     checkpoint = tf.train.Checkpoint(model = model, optimizer = optimizer, optimizer_step = optimizer.iterations);

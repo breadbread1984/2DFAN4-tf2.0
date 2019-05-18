@@ -6,14 +6,14 @@ import numpy as np;
 import tensorflow as tf;
 import cv2;
 import dlib;
-from Model import Landmark_2DFAN4;
+from Model import 2DFAN4;
 
 class Landmarker(object):
     
     def __init__(self):
         
         # landmarker
-        self.model = Landmark_2DFAN4();
+        self.model = 2DFAN4([256,256]);
         if exists('checkpoints_2DFAN4'):
             print("load model from check point...");
             optimizer = tf.keras.optimizers.Adam(1e-3);
