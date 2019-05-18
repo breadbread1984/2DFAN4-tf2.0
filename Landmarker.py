@@ -14,10 +14,10 @@ class Landmarker(object):
         
         # landmarker
         if exists('model.h5'):
-            print("load model from weight directory");
+            print("load from model file...");
             self.model = tf.keras.models.load_model('model.h5');
         elif exists('checkpoints_2DFAN4'):
-            print("load model from check point...");
+            print("load from check point...");
             self.model = _2DFAN4([256,256,3]);
             optimizer = tf.keras.optimizers.Adam(1e-3);
             checkpoint = tf.train.Checkpoint(model = self.model, optimizer = optimizer, optimizer_step = optimizer.iterations);
