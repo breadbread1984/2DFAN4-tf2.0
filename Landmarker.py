@@ -13,18 +13,15 @@ class Landmarker(object):
     def __init__(self):
         
         # landmarker
-        self.model = _2DFAN4([256,256]);
-        if exists('checkpoints_2DFAN4'):
+        if exists('model.h5'):
+            print("load model from weight directory");
+            self.model = tf.keras.models.load_model('model.h5');
+        elif exists('checkpoints_2DFAN4'):
             print("load model from check point...");
+            self.model = _2DFAN4([256,256]);
             optimizer = tf.keras.optimizers.Adam(1e-3);
             checkpoint = tf.train.Checkpoint(model = self.model, optimizer = optimizer, optimizer_step = optimizer.iterations);
             checkpoint.restore(tf.train.latest_checkpoint('checkpoints_2DFAN4'));
-        elif exists('model'):
-            print("load model from weight directory");
-            self.model.load_weights('model/2dfan4');
-        elif exists('_2DFAN4.h5'):
-            print("load model from weight file");
-            self.model.load_weights('_2DFAN4.h5');
         else:
             raise 'no way to load model!';
         # face detector
