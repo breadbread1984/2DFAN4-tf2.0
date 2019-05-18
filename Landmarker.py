@@ -18,7 +18,7 @@ class Landmarker(object):
             self.model = tf.keras.models.load_model('model.h5');
         elif exists('checkpoints_2DFAN4'):
             print("load model from check point...");
-            self.model = _2DFAN4([256,256]);
+            self.model = _2DFAN4([256,256,3]);
             optimizer = tf.keras.optimizers.Adam(1e-3);
             checkpoint = tf.train.Checkpoint(model = self.model, optimizer = optimizer, optimizer_step = optimizer.iterations);
             checkpoint.restore(tf.train.latest_checkpoint('checkpoints_2DFAN4'));

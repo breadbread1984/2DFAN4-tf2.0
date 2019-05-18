@@ -73,4 +73,4 @@ def _2DFAN4(input_shape, module_num = 4):
 if __name__ == "__main__":
     
     assert tf.executing_eagerly();
-    model = _2DFAN4([256,256]);
+    model = _2DFAN4([256,256,3]);

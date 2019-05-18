@@ -12,7 +12,7 @@ batch_size = 10;
 
 def main():
     
-    model = _2DFAN4([256,256]);
+    model = _2DFAN4([256,256,3]);
     data = Data('300W-LP');
     optimizer = tf.keras.optimizers.Adam(1e-4);
     checkpoint = tf.train.Checkpoint(model = model, optimizer = optimizer, optimizer_step = optimizer.iterations);
