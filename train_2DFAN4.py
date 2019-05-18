@@ -4,7 +4,7 @@ import os.path;
 import numpy as np;
 import cv2;
 import tensorflow as tf;
-from Model import 2DFAN4;
+from Model import _2DFAN4;
 from Data import Data;
 from Landmarker import Landmarker;
 
@@ -12,7 +12,7 @@ batch_size = 10;
 
 def main():
     
-    model = 2DFAN4([256,256]);
+    model = _2DFAN4([256,256]);
     data = Data('300W-LP');
     optimizer = tf.keras.optimizers.Adam(1e-4);
     checkpoint = tf.train.Checkpoint(model = model, optimizer = optimizer, optimizer_step = optimizer.iterations);
@@ -45,8 +45,7 @@ def main():
                     show = np.expand_dims(show, axis = 0);
                     tf.summary.image('landmark', show, step = optimizer.iterations);
     # save final model
-    if False == os.path.exists('model'): os.mkdir('model');
-    model.save_weights('./model/2dfan4');
+    model.save('model.h5');
 
 if __name__ == "__main__":
 

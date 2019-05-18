@@ -53,7 +53,7 @@ def Module(input_shape, isOutput = False):
         results = tf.keras.layers.Add()([a,b]);
     return tf.keras.Model(inputs = inputs, outputs = results);
     
-def 2DFAN4(input_shape, module_num = 4):
+def _2DFAN4(input_shape, module_num = 4):
 
     inputs = tf.keras.Input(shape = input_shape);
     results = tf.keras.layers.Conv2D(filters = 64, kernel_size = (7,7), strides = (2,2), padding = 'same')(inputs);
@@ -73,4 +73,4 @@ def 2DFAN4(input_shape, module_num = 4):
 if __name__ == "__main__":
     
     assert tf.executing_eagerly();
-    model = 2DFAN4([256,256]);
+    model = _2DFAN4([256,256]);

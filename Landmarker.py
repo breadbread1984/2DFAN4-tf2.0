@@ -6,14 +6,14 @@ import numpy as np;
 import tensorflow as tf;
 import cv2;
 import dlib;
-from Model import 2DFAN4;
+from Model import _2DFAN4;
 
 class Landmarker(object):
     
     def __init__(self):
         
         # landmarker
-        self.model = 2DFAN4([256,256]);
+        self.model = _2DFAN4([256,256]);
         if exists('checkpoints_2DFAN4'):
             print("load model from check point...");
             optimizer = tf.keras.optimizers.Adam(1e-3);
@@ -22,9 +22,9 @@ class Landmarker(object):
         elif exists('model'):
             print("load model from weight directory");
             self.model.load_weights('model/2dfan4');
-        elif exists('2DFAN4.h5'):
+        elif exists('_2DFAN4.h5'):
             print("load model from weight file");
-            self.model.load_weights('2DFAN4.h5');
+            self.model.load_weights('_2DFAN4.h5');
         else:
             raise 'no way to load model!';
         # face detector
