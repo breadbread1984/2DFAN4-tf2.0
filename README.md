@@ -10,7 +10,7 @@ download 300W-LP and place its directory under the root directory of this projec
 python3 train_2DFAN4.py
 ```
 
-a trained model is available [here](https://mega.nz/#!HQZRWY4L!TM_3K3MdO0UBSB3e6QWLhhDyxIhzGzM4MjSBgusyyoc). 
+a trained model is available [here](https://drive.google.com/file/d/1JVOQHhIlRPUzwG18VWfcCUc-ICNNba8I/view?usp=sharing). 
 
 ### how to test
 
