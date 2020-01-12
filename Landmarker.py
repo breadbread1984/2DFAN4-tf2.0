@@ -25,8 +25,7 @@ class Landmarker(object):
         else:
             raise 'no way to load model!';
         # face detector
-        with tf.device('/cpu:0'):
-            self.detector = Detector();
+        self.detector = Detector();
    
     def expandBounding(self, bounding, size):
 
@@ -109,7 +108,8 @@ class Landmarker(object):
     
     def landmark(self, rgb):
 
-        faces = self.detector.detect(rgb);
+        with tf.device('/cpu:0'):
+            faces = self.detector.detect(rgb);
         retval = list();
         for face in faces:
             upper_left = tuple(face[0:2]);
