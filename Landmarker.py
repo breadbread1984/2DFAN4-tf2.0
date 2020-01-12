@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 from copy import deepcopy;
-from os.path import exists;
+from os.path import exists, join;
 import numpy as np;
 import tensorflow as tf;
 import cv2;
-import dlib;
+from MTCNN import Detector;
 from Model import _2DFAN4;
 
 class Landmarker(object):
@@ -13,9 +13,9 @@ class Landmarker(object):
     def __init__(self):
         
         # landmarker
-        if exists('model.h5'):
+        if exists(join('models','model.h5')):
             print("load from model file...");
-            self.model = tf.keras.models.load_model('model.h5');
+            self.model = tf.keras.models.load_model(join('models','model.h5'));
         elif exists('checkpoints_2DFAN4'):
             print("load from check point...");
             self.model = _2DFAN4([256,256,3]);
@@ -25,15 +25,16 @@ class Landmarker(object):
         else:
             raise 'no way to load model!';
         # face detector
-        self.detector = dlib.get_frontal_face_detector();
+        with tf.device('/cpu:0'):
+            self.detector = Detector();
    
     def expandBounding(self, bounding, size):
 
         center = (
-            (bounding.left() + bounding.right()) / 2,
-            (bounding.top() + bounding.bottom()) / 2 + (bounding.bottom() - bounding.top()) / 9
+            (bounding[0] + bounding[2]) / 2,
+            (bounding[1] + bounding[3]) / 2 + (bounding[3] - bounding[1]) / 9
         );
-        expanded = dlib.rectangle(
+        expanded = (
             int(center[0] - size[0] / 2),
             int(center[1] - size[1] / 2),
             int(center[0] + size[0] / 2),
@@ -45,9 +46,9 @@ class Landmarker(object):
         
         assert type(size) is tuple;
         A = np.array([
-            [bounding.left(),   bounding.left(),    bounding.right(),   bounding.right()],
-            [bounding.top(),    bounding.bottom(),  bounding.bottom(),  bounding.top()],
-            [1,                 1,                  1,                  1]
+            [bounding[0], bounding[0], bounding[2], bounding[2]],
+            [bounding[1], bounding[3], bounding[3], bounding[1]],
+            [1,           1,           1,           1]
         ], dtype = np.float32);
         B = np.array([
             [0, 0,          size[0],    size[0]],
@@ -96,24 +97,25 @@ class Landmarker(object):
         
         center = np.reshape(
             np.array(
-                [(bounding.left() + bounding.right()) / 2, (bounding.top() + bounding.bottom()) / 2],
+                [(bounding[0] + bounding[2]) / 2, (bounding[1] + bounding[3]) / 2],
                 dtype = np.float32
             ), (2,1));
         scale = np.reshape(
             np.array(
-                [bounding.right() - bounding.left(), bounding.bottom() - bounding.top()],
+                [bounding[2] - bounding[0], bounding[3] - bounding[1]],
                 dtype = np.float32
             ), (2,1));
         return landmarks_proj * scale + center;
     
     def landmark(self, rgb):
 
-        gray = cv2.cvtColor(rgb,cv2.COLOR_BGR2GRAY);
-        faces = self.detector(gray,0);
+        faces = self.detector.detect(rgb);
         retval = list();
         for face in faces:
+            upper_left = tuple(face[0:2]);
+            down_right = tuple(face[2:4]);
             # crop a square area centered at face
-            length = int(1.5 * max(face.right() - face.left(),face.bottom() - face.top()));
+            length = int(1.5 * max(down_right[0] - upper_left[0],down_right[1] - upper_left[1]));
             face = self.expandBounding(face,(length,length));
             faceimg = self.crop(rgb,face,(length, length));
             faceimg_rz = cv2.resize(faceimg,(256,256));
@@ -136,11 +138,24 @@ class Landmarker(object):
         return img;
 
 if __name__ == "__main__":
-    
+   
+    import sys;
+    if len(sys.argv) != 2:
+        print("Usage: " + sys.argv[0] + " <video>");
+        exit(0);
     landmarker = Landmarker();
-    img = cv2.imread('test/christmas.jpg');
-    assert img is not None;
-    show = landmarker.visualize(img,landmarker.landmark(img));
-    cv2.imshow('show',show);
-    cv2.waitKey();
+    cap = cv2.VideoCapture(sys.argv[1]);
+    if cap is None:
+        print('invalid video!');
+        exit(0);
+    wri = cv2.VideoWriter('output.avi', cv2.VideoWriter_fourcc(*'MJPG'), cap.get(cv2.CAP_PROP_FPS), \
+            (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))));
+    while True:
+        ret, img = cap.read();
+        if ret == False: break;
+        show = landmarker.visualize(img,landmarker.landmark(img));
+        cv2.imshow('show',show);
+        wri.write(show);
+        cv2.waitKey(int(1000/cap.get(cv2.CAP_PROP_FPS)));
+    wri.close();
 
