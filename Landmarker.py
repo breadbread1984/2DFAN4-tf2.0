@@ -134,7 +134,7 @@ class Landmarker(object):
         for landmark in landmarks:
             for pt in landmark.transpose():
                 pt = tuple(pt.astype('int32'));
-                cv2.circle(img, pt, 2, (0,255,0), -1);
+                cv2.circle(img, pt, 10, (0,0,255), -1);
         return img;
 
 if __name__ == "__main__":
@@ -154,8 +154,7 @@ if __name__ == "__main__":
         ret, img = cap.read();
         if ret == False: break;
         show = landmarker.visualize(img,landmarker.landmark(img));
-        cv2.imshow('show',show);
+        #cv2.imshow('show',show);
         wri.write(show);
-        cv2.waitKey(int(1000/cap.get(cv2.CAP_PROP_FPS)));
-    wri.close();
+        #cv2.waitKey(int(1000/cap.get(cv2.CAP_PROP_FPS)));
 
